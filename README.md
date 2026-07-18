@@ -78,3 +78,104 @@ Voir le dossier `/scripts` pour les scripts de sauvegarde utilisés.
 ## Auteur
 
 Trari Abbes — Administrateur système Linux en formation, Oran, Algérie
+# Docker Self-Hosted Stack
+
+Plateforme SaaS auto-hébergée déployée avec Docker Compose, hébergeant plusieurs services derrière un reverse proxy avec HTTPS automatique.
+
+## Services en ligne
+
+| Service | URL | Rôle |
+|---------|-----|------|
+| Nginx Proxy Manager | admin.traricloud.de | Reverse proxy (accès privé) |
+| Uptime Kuma | status.traricloud.de | Supervision et monitoring |
+| Gitea | git.traricloud.de | Hébergement Git privé |
+| Vaultwarden | vault.traricloud.de | Gestionnaire de mots de passe |
+| Authentik | auth.traricloud.de | SSO (Single Sign-On) |
+| MinIO | s3.traricloud.de | Stockage objet (compatible S3) |
+| MinIO Console | s3-console.traricloud.de | Administration du stockage |
+| Grafana | grafana.traricloud.de | Dashboards et visualisation |
+| Prometheus | metrics.traricloud.de | Collecte de métriques |
+
+## Architecture
+Internet
+
+│
+
+▼
+
+Gestionnaire de proxy Nginx (HTTPS / Let's Encrypt)
+
+│
+
+├── Uptime Kuma
+
+├── Gitea ───────────┐──┐──┐──┐
+
+├── Vaultwarden │
+
+├── Authentik ─────────────────────── PostgreSQL
+
+├── MiniO │── Redis
+
+├── Grafana │
+
+└── Prométhée
+## Stack technique
+
+- **OS** : Ubuntu 26.04 LTS (VPS Hetzner dédié, 4GB RAM + 4GB swap)
+- **Conteneurisation** : Docker + Docker Compose (9 conteneurs)
+- **Reverse proxy** : Nginx Proxy Manager
+- **SSL** : Let's Encrypt (renouvellement automatique sur tous les services)
+- **Base de données** : PostgreSQL 16
+- **Cache/File d'attente** : Redis 7
+- **SSO** : Authentik
+- **Stockage objet** : MinIO (compatible API S3)
+- **Monitoring** : Prometheus + Grafana + Uptime Kuma
+- **Git** : Gitea (SQLite)
+- **Coffre-fort** : Vaultwarden (implémentation Bitwarden)
+
+## Fonctionnalités mises en place
+
+### Infrastructure
+- VPS dédié séparé de l'environnement de production (isolation des risques)
+- Swap de 4GB configuré en sécurité pour la charge mémoire
+- 9 services conteneurisés gérés via un seul `docker-compose.yml`
+- Réseau Docker géré automatiquement (résolution de noms entre conteneurs)
+
+### Reverse Proxy & HTTPS
+- Nginx Proxy Manager pour la gestion centralisée de 9 sous-domaines
+- Certificats SSL/TLS automatiques via Let's Encrypt sur tous les services
+- Interface d'administration accessible uniquement via HTTPS (port fermé au public)
+
+### Identité & Sécurité
+- Authentik déployé comme fournisseur SSO (PostgreSQL + Redis + worker asynchrone)
+- Vaultwarden avec inscriptions désactivées après création du compte principal
+- Pare-feu UFW configuré (SSH, HTTP, HTTPS uniquement)
+- Aucun port de base de données exposé publiquement (PostgreSQL, Redis internes uniquement)
+
+### Stockage & Données
+- MinIO comme stockage objet compatible S3
+- PostgreSQL comme base de données partagée
+- Redis comme cache et broker de messages
+
+### Monitoring
+- Surveillance de la disponibilité de tous les services via Uptime Kuma
+- Prometheus pour la collecte de métriques
+- Grafana pour la visualisation des données
+- Alertes email automatiques en cas de panne
+
+## Prochaines étapes
+
+- [ ] Connecter Prometheus aux métriques Docker (cAdvisor / node-exporter)
+- [ ] Créer des dashboards Grafana personnalisés
+- [ ] CI/CD avec Gitea Actions
+- [ ] Sauvegardes automatisées de tous les volumes (PostgreSQL, MinIO, Authentik)
+- [ ] Intégrer Authentik comme SSO pour les autres services (Grafana, MinIO)
+
+## Statut
+
+✅ En production — 9 services actifs
+
+## Auteur
+
+Trari Abbes — Administrateur système Linux en formation, Oran, Algérie
