@@ -1,86 +1,6 @@
-# Docker Self-Hosted Stack
+# Plateforme SaaS Auto-hébergée
 
-Plateforme self-hosted déployée avec Docker et Docker Compose, hébergeant plusieurs services derrière un reverse proxy avec HTTPS automatique.
-
-## Services en ligne
-
-| Service | URL | Rôle |
-|---------|-----|------|
-| Nginx Proxy Manager | https://admin.traricloud.de | Administration reverse proxy (accès privé) |
-| Uptime Kuma | https://status.traricloud.de | Supervision et monitoring |
-| Gitea | https://git.traricloud.de | Hébergement Git privé |
-| Vaultwarden | https://vault.traricloud.de | Gestionnaire de mots de passe |
-
-## Architecture
-Internet
-
-│
-
-▼
-
-Gestionnaire de proxy Nginx (HTTPS / Let's Encrypt)
-
-│
-
-├── Uptime Kuma (supervision)
-
-├── Gitea (Git privé)
-
-└── Vaultwarden (mots de pass)
-## Stack technique
-
-- **OS** : Ubuntu 26.04 LTS (VPS Hetzner dédié)
-- **Conteneurisation** : Docker + Docker Compose
-- **Reverse proxy** : Nginx Proxy Manager
-- **SSL** : Let's Encrypt (renouvellement automatique)
-- **Monitoring** : Uptime Kuma
-- **Git** : Gitea (SQLite)
-- **Coffre-fort** : Vaultwarden (implémentation Bitwarden)
-
-## Fonctionnalités mises en place
-
-### Infrastructure
-- VPS dédié séparé de l'environnement de production (isolation des risques)
-- Docker et Docker Compose installés et configurés
-- Réseau Docker géré automatiquement (résolution de noms entre conteneurs)
-- 4 services conteneurisés gérés via un seul `docker-compose.yml`
-
-### Reverse Proxy & HTTPS
-- Nginx Proxy Manager pour la gestion centralisée des sous-domaines
-- Certificats SSL/TLS automatiques via Let's Encrypt sur tous les services
-- Support HTTP/2 et Force SSL
-
-### Sécurité
-- Interface d'administration accessible uniquement via HTTPS (port d'admin fermé au public, lié en local uniquement)
-- Inscriptions désactivées sur Vaultwarden après création du compte principal
-- Pare-feu UFW configuré (SSH, HTTP, HTTPS uniquement)
-
-### Monitoring
-- Surveillance de la disponibilité de 4 services + 2ᵉ VPS de production
-- Vérification automatique toutes les 60 secondes
-- Alertes email automatiques (SMTP) en cas de panne
-- Suivi de l'expiration des certificats SSL
-
-### Sauvegardes
-- Script Bash de sauvegarde automatisée de tous les volumes Docker
-- Planification via Cron (exécution quotidienne)
-- Rétention automatique de 7 jours
-- Réplication des sauvegardes vers un poste distant via rsync
-
-## Scripts
-
-Voir le dossier `/scripts` pour les scripts de sauvegarde utilisés.
-
-## Statut
-
-✅ En production
-
-## Auteur
-
-Trari Abbes — Administrateur système Linux en formation, Oran, Algérie
-# Docker Self-Hosted Stack
-
-Plateforme SaaS auto-hébergée déployée avec Docker Compose, hébergeant plusieurs services derrière un reverse proxy avec HTTPS automatique.
+Plateforme complète de type SaaS, déployée avec Docker Compose sur un VPS dédié, incluant identité (SSO), stockage objet, monitoring et CI/CD.
 
 ## Services en ligne
 
@@ -88,7 +8,7 @@ Plateforme SaaS auto-hébergée déployée avec Docker Compose, hébergeant plus
 |---------|-----|------|
 | Nginx Proxy Manager | admin.traricloud.de | Reverse proxy (accès privé) |
 | Uptime Kuma | status.traricloud.de | Supervision et monitoring |
-| Gitea | git.traricloud.de | Hébergement Git privé |
+| Gitea | git.traricloud.de | Hébergement Git privé + CI/CD |
 | Vaultwarden | vault.traricloud.de | Gestionnaire de mots de passe |
 | Authentik | auth.traricloud.de | SSO (Single Sign-On) |
 | MinIO | s3.traricloud.de | Stockage objet (compatible S3) |
@@ -98,48 +18,37 @@ Plateforme SaaS auto-hébergée déployée avec Docker Compose, hébergeant plus
 
 ## Architecture
 Internet
-
 │
-
 ▼
-
-Gestionnaire de proxy Nginx (HTTPS / Let's Encrypt)
-
+Nginx Proxy Manager (HTTPS / Let's Encrypt)
 │
-
 ├── Uptime Kuma
-
-├── Gitea ───────────┐──┐──┐──┐
-
-├── Vaultwarden │
-
-├── Authentik ─────────────────────── PostgreSQL
-
-├── MiniO │── Redis
-
-├── Grafana │
-
-└── Prométhée
+├── Gitea + Runner CI/CD ──┐
+├── Vaultwarden             │
+├── Authentik ──────────────┼── PostgreSQL
+├── MinIO                   │── Redis
+├── Grafana ◄── Prometheus ◄┴── cAdvisor + node-exporter
 ## Stack technique
 
 - **OS** : Ubuntu 26.04 LTS (VPS Hetzner dédié, 4GB RAM + 4GB swap)
-- **Conteneurisation** : Docker + Docker Compose (9 conteneurs)
+- **Conteneurisation** : Docker + Docker Compose (12 conteneurs)
 - **Reverse proxy** : Nginx Proxy Manager
 - **SSL** : Let's Encrypt (renouvellement automatique sur tous les services)
 - **Base de données** : PostgreSQL 16
 - **Cache/File d'attente** : Redis 7
 - **SSO** : Authentik
 - **Stockage objet** : MinIO (compatible API S3)
-- **Monitoring** : Prometheus + Grafana + Uptime Kuma
+- **Monitoring** : Prometheus + Grafana + cAdvisor + node-exporter + Uptime Kuma
+- **CI/CD** : Gitea Actions + Runner auto-hébergé
 - **Git** : Gitea (SQLite)
 - **Coffre-fort** : Vaultwarden (implémentation Bitwarden)
 
 ## Fonctionnalités mises en place
 
 ### Infrastructure
-- VPS dédié séparé de l'environnement de production (isolation des risques)
+- VPS dédié séparé de l'environnement de production Nextcloud (isolation des risques)
 - Swap de 4GB configuré en sécurité pour la charge mémoire
-- 9 services conteneurisés gérés via un seul `docker-compose.yml`
+- 12 services conteneurisés gérés via un seul `docker-compose.yml`
 - Réseau Docker géré automatiquement (résolution de noms entre conteneurs)
 
 ### Reverse Proxy & HTTPS
@@ -159,22 +68,31 @@ Gestionnaire de proxy Nginx (HTTPS / Let's Encrypt)
 - Redis comme cache et broker de messages
 
 ### Monitoring
-- Surveillance de la disponibilité de tous les services via Uptime Kuma
-- Prometheus pour la collecte de métriques
-- Grafana pour la visualisation des données
+- Uptime Kuma pour la surveillance de la disponibilité de tous les services
+- Prometheus pour la collecte de métriques (serveur + conteneurs)
+- cAdvisor pour les métriques détaillées par conteneur (CPU, RAM, réseau)
+- node-exporter pour les métriques système
+- Grafana pour la visualisation avec dashboard temps réel
 - Alertes email automatiques en cas de panne
 
-## Prochaines étapes
+### CI/CD
+- Gitea Actions activé avec Runner auto-hébergé
+- Pipeline automatique déclenché à chaque `git push`
+- Tests exécutés sur les propres serveurs de l'infrastructure
 
-- [ ] Connecter Prometheus aux métriques Docker (cAdvisor / node-exporter)
-- [ ] Créer des dashboards Grafana personnalisés
-- [ ] CI/CD avec Gitea Actions
-- [ ] Sauvegardes automatisées de tous les volumes (PostgreSQL, MinIO, Authentik)
-- [ ] Intégrer Authentik comme SSO pour les autres services (Grafana, MinIO)
+### Sauvegardes
+- Script de sauvegarde complet : dump PostgreSQL propre (`pg_dumpall`) + archive de tous les volumes
+- Planification via Cron (exécution quotidienne)
+- Rétention automatique de 7 jours
+- Réplication des sauvegardes vers un poste distant via rsync
+
+## Scripts
+
+Voir le dossier `/scripts` pour les scripts de sauvegarde utilisés.
 
 ## Statut
 
-✅ En production — 9 services actifs
+✅ En production — 12 services actifs, CI/CD fonctionnel, sauvegardes automatisées
 
 ## Auteur
 
