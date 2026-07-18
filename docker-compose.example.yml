@@ -1,0 +1,42 @@
+services:
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '127.0.0.1:81:81'
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+
+  uptime-kuma:
+    image: 'louislam/uptime-kuma:1'
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - ./uptime-kuma:/app/data
+
+  gitea:
+    image: 'gitea/gitea:latest'
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+    volumes:
+      - ./gitea/data:/data
+    ports:
+      - '2222:22'
+
+  vaultwarden:
+    image: 'vaultwarden/server:latest'
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - DOMAIN=https://vault.VOTRE_DOMAINE.com
+      - SIGNUPS_ALLOWED=false
+    volumes:
+      - ./vaultwarden/data:/data
