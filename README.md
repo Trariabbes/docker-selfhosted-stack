@@ -27,9 +27,7 @@ Plateforme self-hosted déployée avec Docker et Docker Compose, hébergeant plu
 
 🚧 Projet en cours de construction
 
+
 ## Auteur
 
 Trari Abbes — Administrateur système Linux en formation, Oran, Algérie
-git add README.md
-git commit -m "Mise à jour : Nginx Proxy Manager, Uptime Kuma, monitoring et HTTPS déployés"
-git push origin main
