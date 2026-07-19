@@ -6,7 +6,7 @@ Plateforme complète de type SaaS, déployée avec Docker Compose sur un VPS dé
 
 | Service | URL | Rôle |
 |---------|-----|------|
-| Nginx Proxy Manager | admin.traricloud.de | Reverse proxy (accès privé) |
+| Nginx Proxy Manager | Site vitrine | home.traricloud.de | Présentation des services TrariCloud | admin.traricloud.de | Reverse proxy (accès privé) |
 | Uptime Kuma | status.traricloud.de | Supervision et monitoring |
 | Gitea | git.traricloud.de | Hébergement Git privé + CI/CD |
 | Vaultwarden | vault.traricloud.de | Gestionnaire de mots de passe |

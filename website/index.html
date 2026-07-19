@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrariCloud — Vos données, votre serveur</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --navy:#0f1d33;
+    --navy-2:#16294a;
+    --paper:#f7f4ee;
+    --paper-2:#efe9dc;
+    --gold:#b5893a;
+    --gold-light:#d9b46a;
+    --ink:#1b2536;
+    --ink-soft:#4b5568;
+    --line: rgba(15,29,51,0.14);
+    --ok:#2f7d5c;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    line-height:1.6;
+  }
+  ::selection{background:var(--gold-light);color:var(--navy);}
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-0.01em;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(247,244,238,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1080px;margin:0 auto;padding:16px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--navy);}
+  .brand span{color:var(--gold);}
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--ink-soft);}
+  .nav-links a:hover{color:var(--navy);}
+  .nav-cta{
+    background:var(--navy);color:var(--paper);
+    padding:9px 18px;border-radius:3px;font-size:14px;font-weight:500;
+    border:1px solid var(--navy);
+  }
+  .nav-cta:hover{background:var(--navy-2);}
+  @media(max-width:720px){.nav-links{display:none;}}
+
+  /* ---------- HERO — the "seal" motif ---------- */
+  .hero{
+    background:var(--navy);
+    color:var(--paper);
+    padding:100px 0 110px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(213,171,100,0.10), transparent 45%),
+      radial-gradient(circle at 10% 80%, rgba(213,171,100,0.06), transparent 40%);
+  }
+  .hero-grid{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;
+  }
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;}}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:2.5px;
+    color:var(--gold-light);text-transform:uppercase;margin-bottom:22px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--gold-light);}
+
+  .hero h1{
+    font-size:52px;line-height:1.08;color:#fff;margin-bottom:22px;
+  }
+  .hero h1 em{color:var(--gold-light);font-style:normal;}
+  .hero-sub{
+    font-size:17px;color:rgba(247,244,238,0.78);max-width:480px;margin-bottom:34px;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--gold);color:var(--navy);font-weight:600;
+    padding:14px 26px;border-radius:3px;font-size:15px;
+  }
+  .btn-primary:hover{background:var(--gold-light);}
+  .btn-ghost{
+    border:1px solid rgba(247,244,238,0.35);color:var(--paper);
+    padding:14px 26px;border-radius:3px;font-size:15px;
+  }
+  .btn-ghost:hover{border-color:rgba(247,244,238,0.7);}
+
+  /* seal / certificate visual — signature element */
+  .seal{
+    position:relative;
+    background:var(--navy-2);
+    border:1px solid rgba(213,171,100,0.35);
+    border-radius:6px;
+    padding:30px 28px;
+  }
+  .seal-top{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    border-bottom:1px dashed rgba(213,171,100,0.3);
+    padding-bottom:16px;margin-bottom:16px;
+  }
+  .seal-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:rgba(247,244,238,0.5);text-transform:uppercase;}
+  .seal-badge{
+    width:52px;height:52px;border-radius:50%;
+    border:1.5px solid var(--gold-light);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;color:var(--gold-light);font-size:18px;
+  }
+  .seal-row{
+    display:flex;justify-content:space-between;padding:9px 0;
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .seal-row:last-child{border-bottom:none;}
+  .seal-key{color:rgba(247,244,238,0.5);}
+  .seal-val{color:var(--paper);}
+  .dot-live{
+    width:7px;height:7px;border-radius:50%;background:#4fd48a;
+    display:inline-block;margin-right:7px;
+    box-shadow:0 0 6px #4fd48a;
+  }
+
+  /* ---------- SECTION LABELS ---------- */
+  .section{padding:88px 0;}
+  .section-eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;
+    color:var(--gold);text-transform:uppercase;margin-bottom:12px;
+  }
+  .section-title{font-size:32px;color:var(--navy);margin-bottom:16px;max-width:640px;}
+  .section-sub{color:var(--ink-soft);max-width:560px;font-size:16px;margin-bottom:52px;}
+
+  /* ---------- PROBLEM / STATEMENT ---------- */
+  .statement{
+    background:var(--paper-2);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .statement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+  @media(max-width:760px){.statement-grid{grid-template-columns:1fr;}}
+  .statement-item .num{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:13px;margin-bottom:10px;}
+  .statement-item h3{font-size:19px;color:var(--navy);margin-bottom:8px;}
+  .statement-item p{color:var(--ink-soft);font-size:15px;}
+
+  /* ---------- OFFERS ---------- */
+  .track{margin-bottom:64px;}
+  .track-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    border-bottom:1.5px solid var(--navy);padding-bottom:14px;
+  }
+  .track-head h3{font-size:23px;color:var(--navy);}
+  .track-head span{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media(max-width:860px){.cards{grid-template-columns:1fr;}}
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:26px 24px;display:flex;flex-direction:column;
+    transition:border-color .2s, transform .2s;
+  }
+  .card:hover{border-color:var(--gold);transform:translateY(-3px);}
+  .card.featured{border-color:var(--gold);border-width:1.5px;position:relative;}
+  .card.featured::before{
+    content:"Recommandé";position:absolute;top:-11px;left:24px;
+    background:var(--gold);color:#fff;font-size:11px;font-weight:600;
+    padding:3px 10px;border-radius:20px;letter-spacing:0.4px;
+  }
+  .card h4{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:17px;color:var(--navy);margin-bottom:6px;}
+  .card .price{font-family:'Fraunces',serif;font-size:28px;color:var(--navy);margin:12px 0 4px;}
+  .card .price span{font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink-soft);font-weight:400;}
+  .card ul{list-style:none;margin:16px 0 0;flex:1;}
+  .card li{
+    font-size:14px;color:var(--ink-soft);padding:7px 0;
+    border-top:1px solid var(--line);
+    display:flex;gap:8px;
+  }
+  .card li::before{content:"—";color:var(--gold);flex-shrink:0;}
+
+  /* ---------- LIVE STATUS ---------- */
+  .status-band{
+    background:var(--navy);color:var(--paper);
+    border-radius:6px;padding:28px 30px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;
+  }
+  .status-left{display:flex;align-items:center;gap:14px;}
+  .status-left h4{font-size:17px;color:#fff;}
+  .status-left p{font-size:13.5px;color:rgba(247,244,238,0.65);margin-top:2px;}
+  .status-cta{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    border:1px solid rgba(213,171,100,0.5);color:var(--gold-light);
+    padding:10px 18px;border-radius:3px;
+  }
+  .status-cta:hover{background:rgba(213,171,100,0.1);}
+
+  /* ---------- TRUST ---------- */
+  .trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  @media(max-width:760px){.trust-grid{grid-template-columns:repeat(2,1fr);}}
+  .trust-item{background:#fff;padding:26px 22px;}
+  .trust-item .ico{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:12px;margin-bottom:10px;letter-spacing:1px;}
+  .trust-item h4{font-size:15.5px;color:var(--navy);margin-bottom:6px;}
+  .trust-item p{font-size:13.5px;color:var(--ink-soft);}
+
+  /* ---------- CTA FOOTER ---------- */
+  .closer{
+    background:var(--navy-2);color:var(--paper);text-align:center;
+    padding:90px 0;
+  }
+  .closer h2{color:#fff;font-size:34px;margin-bottom:16px;}
+  .closer p{color:rgba(247,244,238,0.7);margin-bottom:32px;font-size:16px;}
+
+  footer{
+    background:var(--navy);color:rgba(247,244,238,0.55);
+    padding:36px 0;font-size:13px;
+  }
+  .footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+  .footer-inner .mono{color:rgba(247,244,238,0.35);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">Trari<span>Cloud</span></div>
+    <div class="nav-links">
+      <a href="#offres">Offres</a>
+      <a href="#devops">DevOps</a>
+      <a href="#confiance">Confiance</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="nav-cta">Demander une démo</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Infrastructure cloud indépendante</div>
+      <h1>Vos données restent<br>chez <em>vous</em>,<br>pas chez un géant.</h1>
+      <p class="hero-sub">TrariCloud héberge le stockage, les mots de passe et les outils techniques de votre entreprise sur un serveur que vous connaissez — pas dispersés chez des tiers, à l'étranger.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-primary">Demander une démo gratuite</a>
+        <a href="#offres" class="btn-ghost">Voir les offres</a>
+      </div>
+    </div>
+
+    <div class="seal">
+      <div class="seal-top">
+        <div>
+          <div class="seal-label">Certificat d'hébergement</div>
+        </div>
+        <div class="seal-badge">TC</div>
+      </div>
+      <div class="seal-row"><span class="seal-key">Opérateur</span><span class="seal-val">Trari Abbes</span></div>
+      <div class="seal-row"><span class="seal-key">Localisation</span><span class="seal-val">Serveur dédié</span></div>
+      <div class="seal-row"><span class="seal-key">Chiffrement</span><span class="seal-val">HTTPS / TLS</span></div>
+      <div class="seal-row"><span class="seal-key">Sauvegardes</span><span class="seal-val">Quotidiennes</span></div>
+      <div class="seal-row"><span class="seal-key">Statut</span><span class="seal-val"><span class="dot-live"></span>En ligne</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="statement">
+  <div class="wrap section">
+    <div class="statement-grid">
+      <div class="statement-item">
+        <div class="num mono">01</div>
+        <h3>Fichiers éparpillés</h3>
+        <p>Documents sur Google Drive, mots de passe sur WhatsApp, aucune vue d'ensemble sur qui a accès à quoi.</p>
+      </div>
+      <div class="statement-item">
+        <div class="num mono">02</div>
+        <h3>Aucune sauvegarde</h3>
+        <p>Un téléphone perdu ou un compte piraté, et des mois de documents disparaissent sans recours.</p>
+      </div>
+      <div class="statement-item">
+        <div class="num mono">03</div>
+        <h3>Zéro maîtrise</h3>
+        <p>Vos données transitent par des serveurs étrangers dont vous ne savez rien — juridiction, accès, revente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="offres">
+  <div class="wrap">
+    <div class="section-eyebrow">Pour les entreprises</div>
+    <h2 class="section-title">Un cloud privé, à votre échelle</h2>
+    <p class="section-sub">Stockage de fichiers, mots de passe partagés et surveillance — réunis dans un seul abonnement, hébergé et sauvegardé chaque jour.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h4>Starter</h4>
+        <div class="price">4 000<span> DA / mois</span></div>
+        <ul>
+          <li>10 Go de stockage</li>
+          <li>1 à 2 utilisateurs</li>
+          <li>Coffre-fort de mots de passe</li>
+          <li>Sauvegarde quotidienne</li>
+        </ul>
+      </div>
+      <div class="card featured">
+        <h4>Pro</h4>
+        <div class="price">9 000<span> DA / mois</span></div>
+        <ul>
+          <li>50 Go de stockage</li>
+          <li>Jusqu'à 8 utilisateurs</li>
+          <li>Surveillance et alertes</li>
+          <li>Sauvegarde + copie distante</li>
+          <li>Support prioritaire</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Entreprise</h4>
+        <div class="price">18 000<span> DA / mois</span></div>
+        <ul>
+          <li>200 Go de stockage</li>
+          <li>Utilisateurs illimités</li>
+          <li>Rapport mensuel</li>
+          <li>Support prioritaire + astreinte</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="devops" style="background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-eyebrow">Pour les équipes techniques</div>
+    <h2 class="section-title">Infrastructure DevOps auto-hébergée</h2>
+    <p class="section-sub">Git privé, authentification unique, stockage compatible S3 et monitoring — pour les équipes qui veulent garder la main sur leurs outils.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h4>Git privé</h4>
+        <div class="price">15 000<span> DA / mois</span></div>
+        <ul>
+          <li>Dépôts illimités</li>
+          <li>CI/CD automatisé</li>
+          <li>5 utilisateurs</li>
+          <li>20 Go de stockage</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Identité SSO</h4>
+        <div class="price">20 000<span> DA / mois</span></div>
+        <ul>
+          <li>Un seul mot de passe partout</li>
+          <li>Gestion centralisée des accès</li>
+          <li>15 utilisateurs</li>
+          <li>Révocation instantanée</li>
+        </ul>
+      </div>
+      <div class="card featured">
+        <h4>Pack DevOps complet</h4>
+        <div class="price">40 000<span> DA / mois</span></div>
+        <ul>
+          <li>Git + SSO + Stockage S3</li>
+          <li>Dashboards dédiés</li>
+          <li>Sauvegarde + réplication</li>
+          <li>Support prioritaire</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="status-band">
+      <div class="status-left">
+        <div>
+          <h4><span class="dot-live"></span>Infrastructure en ligne</h4>
+          <p>Disponibilité et incidents suivis en temps réel, publiquement.</p>
+        </div>
+      </div>
+      <a href="https://status.traricloud.de" class="status-cta mono">Voir le statut en direct →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="confiance">
+  <div class="wrap">
+    <div class="section-eyebrow">Engagement</div>
+    <h2 class="section-title">Ce que vous pouvez vérifier vous-même</h2>
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="ico">DISPONIBILITÉ</div>
+        <h4>99% visé</h4>
+        <p>Hors maintenance planifiée, annoncée à l'avance.</p>
+      </div>
+      <div class="trust-item">
+        <div class="ico">RÉPONSE</div>
+        <h4>Sous 4h</h4>
+        <p>En journée, en cas d'incident signalé.</p>
+      </div>
+      <div class="trust-item">
+        <div class="ico">SAUVEGARDE</div>
+        <h4>Chaque jour</h4>
+        <p>Rétention 7 jours, copie sur un site distant.</p>
+      </div>
+      <div class="trust-item">
+        <div class="ico">CONTACT</div>
+        <h4>Direct</h4>
+        <p>Pas de ticket anonyme — vous me parlez à moi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closer" id="contact">
+  <div class="wrap">
+    <h2>Une démonstration gratuite, 20 minutes.</h2>
+    <p>Sans engagement — pour voir si TrariCloud correspond à votre activité.</p>
+    <a href="mailto:trari.abbes@gmail.com" class="btn-primary">trari.abbes@gmail.com</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>© 2026 TrariCloud — Trari Abbes, Oran, Algérie</div>
+    <div class="mono">traricloud.de</div>
+  </div>
+</footer>
+
+</body>
+</html>
