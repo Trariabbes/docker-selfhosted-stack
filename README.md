@@ -15,7 +15,23 @@ Plateforme complète de type SaaS, déployée avec Docker Compose sur un VPS dé
 | MinIO Console | s3-console.traricloud.de | Administration du stockage |
 | Grafana | grafana.traricloud.de | Dashboards et visualisation |
 | Prometheus | metrics.traricloud.de | Collecte de métriques |
+## Système de devis et provisioning automatique
 
+Plateforme complète de gestion commerciale, du premier contact à la livraison du service :
+
+- **Formulaire enrichi** (`devis.traricloud.de`) — nom, entreprise, services souhaités, nombre d'utilisateurs, besoin détaillé
+- **Interface admin protégée** — liste des demandes, fixation du prix
+- **Génération PDF automatique** (DomPDF) — devis professionnel avec numéro unique
+- **Envoi automatique par email** (PHPMailer/SMTP) — PDF en pièce jointe
+- **Lien d'acceptation sécurisé** — token unique par devis, non réutilisable après acceptation
+- **Provisioning automatique** — création du compte Nextcloud dès l'acceptation, envoi des identifiants, sans intervention manuelle
+
+### Stack technique ajoutée
+- PHP + Composer
+- DomPDF (génération PDF)
+- PHPMailer (envoi SMTP)
+- Scripts Bash pour le provisioning (`occ` CLI Nextcloud)
+- sudoers restreint (principe du moindre privilège)
 ## Architecture
 Internet
 │
