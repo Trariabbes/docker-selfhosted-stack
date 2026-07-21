@@ -17,14 +17,35 @@ Plateforme complète de type SaaS, déployée avec Docker Compose sur un VPS dé
 | Prometheus | metrics.traricloud.de | Collecte de métriques |
 ## Système de devis et provisioning automatique
 
-Plateforme complète de gestion commerciale, du premier contact à la livraison du service :
+Plateforme complète de gestion commerciale, du premier contact jusqu'à la livraison du service, testée de bout en bout avec de vrais utilisateurs.
 
-- **Formulaire enrichi** (`devis.traricloud.de`) — nom, entreprise, services souhaités, nombre d'utilisateurs, besoin détaillé
-- **Interface admin protégée** — liste des demandes, fixation du prix
-- **Génération PDF automatique** (DomPDF) — devis professionnel avec numéro unique
-- **Envoi automatique par email** (PHPMailer/SMTP) — PDF en pièce jointe
-- **Lien d'acceptation sécurisé** — token unique par devis, non réutilisable après acceptation
-- **Provisioning automatique** — création du compte Nextcloud dès l'acceptation, envoi des identifiants, sans intervention manuelle
+### Cycle de vente complet
+1. **Formulaire enrichi** (`devis.traricloud.de`) — nom, entreprise, services souhaités, nombre d'utilisateurs, besoin détaillé
+2. **Interface admin protégée** — liste des demandes, fixation du prix
+3. **Génération PDF automatique** (DomPDF) — devis professionnel avec numéro unique
+4. **Envoi automatique par email** (PHPMailer/SMTP) — PDF en pièce jointe
+5. **Lien d'acceptation sécurisé** — token unique par devis, non réutilisable après acceptation
+6. **Confirmation de paiement** — validation manuelle (virement/espèces), déclenche le provisioning
+7. **Provisioning automatique multi-services** — Nextcloud, Gitea (via liaison SSH inter-serveurs), lien d'auto-inscription Vaultwarden
+8. **Email final automatique** avec tous les identifiants et URLs de connexion
+
+### Stack technique ajoutée
+- PHP + Composer
+- DomPDF (génération PDF)
+- PHPMailer (envoi SMTP)
+- Scripts Bash pour le provisioning (`occ` CLI Nextcloud, `gitea admin` CLI)
+- Liaison SSH sécurisée entre les deux VPS (clé dédiée, sudoers restreint)
+- Principe du moindre privilège : `www-data` autorisé à exécuter uniquement le script de provisioning en root, rien d'autre
+
+### Architecture inter-serveurs
+```
+VPS Nextcloud (204.168.213.207)
+    │
+    │ SSH (clé dédiée, sans mot de passe)
+    ▼
+VPS Docker (167.233.221.164)
+    └── Gitea (création de compte via docker exec)
+```
 
 ### Stack technique ajoutée
 - PHP + Composer
