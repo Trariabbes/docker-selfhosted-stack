@@ -18,7 +18,35 @@ Plateforme complète de type SaaS, déployée avec Docker Compose sur un VPS dé
 ## Système de devis et provisioning automatique
 
 Plateforme complète de gestion commerciale, du premier contact jusqu'à la livraison du service, testée de bout en bout avec de vrais utilisateurs.
+## Base de données et portail client
 
+Migration complète vers une base de données relationnelle SQLite, avec portail client authentifié.
+
+### Base de données (SQLite)
+- 6 tables : `clients`, `devis`, `abonnements`, `factures`, `tickets`, `audit_log`
+- Migration complète des anciennes données JSON sans perte
+- Gestion de la concurrence (WAL mode, busy_timeout, connexions persistantes)
+
+### Portail client (`portail.traricloud.de`)
+- Authentification par email/mot de passe (hashé)
+- Définition du mot de passe via lien sécurisé (token unique)
+- Tableau de bord : abonnements actifs, devis, factures, tickets support
+- Journal d'audit de toutes les connexions
+
+### Facturation récurrente automatique
+- Création automatique de l'abonnement à la confirmation de paiement
+- Génération de la première facture (statut "payée")
+- Script Cron quotidien (`cron_facturation.php`) qui :
+  - Détecte les abonnements arrivant à échéance
+  - Génère automatiquement la facture suivante (numéro unique)
+  - Avance la date de prochain paiement (+1 mois)
+  - Envoie un email de facture au client
+- Client peut consulter ses factures et abonnements dans son portail
+
+### Stack technique ajoutée
+- SQLite (base de données relationnelle)
+- Sessions PHP pour l'authentification client
+- Cron pour la facturation automatique
 ### Cycle de vente complet
 1. **Formulaire enrichi** (`devis.traricloud.de`) — nom, entreprise, services souhaités, nombre d'utilisateurs, besoin détaillé
 2. **Interface admin protégée** — liste des demandes, fixation du prix
