@@ -154,7 +154,18 @@ Nginx Proxy Manager (HTTPS / Let's Encrypt)
 ## Scripts
 
 Voir le dossier `/scripts` pour les scripts de sauvegarde utilisés.
+## Tableau de bord administrateur centralisé
 
+Page d'accueil de l'admin (`devis.traricloud.de/admin/`) offrant une vue d'ensemble complète de l'activité.
+
+### Contenu
+- **Statistiques clés** : nombre de clients, abonnements actifs, revenu mensuel récurrent, factures en attente, devis en cours
+- **État des serveurs en temps réel** : RAM et disque des deux VPS (Nextcloud en local, Docker Stack via SSH)
+- **Liste complète des clients** avec leurs services, prix, statut d'abonnement et prochaine échéance de paiement
+
+### Navigation
+- Page d'accueil admin = tableau de bord (`index.php`)
+- Liste détaillée des demandes de devis accessible séparément (`demandes.php`)
 ## Statut
 
 ✅ En production — 12 services actifs, CI/CD fonctionnel, sauvegardes automatisées
